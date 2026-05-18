@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDP Enterprise Decision Guide — Build vs Buy · GCP vs Azure</title>
+<meta name="description" content="A complete enterprise guide to Intelligent Document Processing (IDP) — covering what IDP is, build vs buy decisions, full GCP and Azure technical stacks, architecture diagrams, use cases across 8 industries, and a phased build roadmap. Created by Rashmi Singh.">
+<meta name="author" content="Rashmi Singh">
+<meta name="keywords" content="Intelligent Document Processing, IDP, GCP, Azure, Document AI, Build vs Buy, enterprise automation, OCR, Vertex AI, Azure OpenAI">
+
+<!-- Open Graph — for LinkedIn, WhatsApp, Slack previews -->
+<meta property="og:title" content="IDP Enterprise Decision Guide — Build vs Buy · GCP vs Azure">
+<meta property="og:description" content="Complete technical reference for enterprise architects. What is IDP, build vs buy, GCP vs Azure stacks, use cases across 8 industries, and phased roadmap.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Enterprise Series · Rashmi Singh">
+
+<!-- Twitter card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IDP Enterprise Decision Guide">
+<meta name="twitter:description" content="Complete technical reference — IDP, GCP vs Azure, build vs buy, 8 industry use cases. Created by Rashmi Singh.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 300;
+  background: #F4F4F0;
+  color: #333333;
+  line-height: 1.7;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 300;
+  background: #2D2D3F; height: 52px;
+  display: flex; align-items: center; padding: 0 2rem;
+}
+.nav-brand { font-size: 0.85rem; font-weight: 700; color: #FFFFFF; letter-spacing: 0.04em; margin-right: auto; cursor: pointer; }
+  .nav-attr { font-size: 0.72rem; color: #FFFFFF; font-weight: 600; }
+
+/* ── HERO ── */
+.hero { background: #2D2D3F; padding: 3.5rem 2rem 0; text-align: center; }
+.hero-eyebrow { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem; }
+.hero-title { font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 700; color: #FFFFFF; line-height: 1.15; letter-spacing: -0.02em; max-width: 720px; margin: 0 auto 0.8rem; }
+.hero-title em { font-style: italic; color: #E8A838; }
+.hero-sub { font-size: 0.9rem; font-weight: 300; color: rgba(255,255,255,0.55); max-width: 520px; margin: 0 auto 2rem; line-height: 1.7; }
+
+/* ── TAB BAR ── */
+.tab-bar {
+  background: #2D2D3F;
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 52px;
+  z-index: 200;
+}
+.tab-btn {
+  flex: 1;
+  padding: 0.5rem 0.5rem;
+  height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  cursor: pointer;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  border: none;
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.05); }
+.tab-btn.active { color: #FFFFFF; font-weight: 600; }
+.tab-btn.t1.active { border-bottom-color: #4A90C4; }
+.tab-btn.t2.active { border-bottom-color: #E8A838; }
+.tab-btn.t3.active { border-bottom-color: #4CAF7D; }
+.tab-btn.t4.active { border-bottom-color: #9B6FC4; }
+.tab-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.82rem; font-weight: 700;
+  flex-shrink: 0; letter-spacing: 0;
+  background: none !important;
+}
+.tab-label {
+  font-size: 0.62rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+.tab-btn.active .tab-label { color: rgba(255,255,255,0.9); }
+
+/* ── TAB PANELS ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: flex; min-height: calc(100vh - 100px); }
+
+/* ── SPLIT LAYOUT ── */
+.left-panel { width: 320px; flex-shrink: 0; padding: 2.5rem 2rem 3rem; position: sticky; top: 100px; height: fit-content; }
+.right-panel { flex: 1; background: #FFFFFF; overflow: visible; }
+.canvas-area { padding: 2.5rem 3rem; }
+
+/* Chapter bg colours */
+.t1 .left-panel { background: #C8DCE8; }
+.t2 .left-panel { background: #F5E6D8; }
+.t3 .left-panel { background: #D4E8D4; }
+.t4 .left-panel { background: #E8DAF0; }
+
+/* Left panel text */
+.panel-eyebrow { font-size: 0.65rem; font-weight: 700; color: #444444; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.5rem; }
+.panel-title { font-size: 1.7rem; font-weight: 700; color: #111111; line-height: 1.2; margin-bottom: 1rem; }
+.panel-body { font-size: 0.88rem; font-weight: 400; color: #222222; line-height: 1.75; margin-bottom: 0.8rem; }
+.panel-divider { height: 1px; background: rgba(0,0,0,0.18); margin: 1rem 0; }
+.panel-stat { font-size: 0.82rem; font-weight: 400; color: #222222; line-height: 2.2; }
+
+/* VIS LABELS */
+.vis-label { font-size: 0.65rem; font-weight: 600; color: #555555; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.9rem; }
+.canvas-section { margin-bottom: 2.5rem; }
+
+/* TABLES */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.data-table th { font-size: 0.65rem; font-weight: 600; color: #333333; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 0.8rem; border-bottom: 2px solid #E0E0E0; text-align: left; background: #F0F0F0; }
+.data-table td { padding: 0.72rem 0.8rem; border-bottom: 1px solid #E0E0E0; color: #222222; font-weight: 400; vertical-align: top; line-height: 1.6; }
+.data-table tr:hover td { background: #FAFAFA; }
+.td-s { font-weight: 600; color: #333333; }
+.td-sub { font-size: 0.72rem; color: #888888; display: block; margin-top: 2px; font-weight: 300; }
+
+/* BADGES */
+.badge { display: inline-block; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 2px; text-transform: uppercase; }
+.b-core { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+.b-infra { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
+.b-sec { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+.b-ops { background: #EDE9FE; color: #4C1D95; border: 1px solid #C4B5FD; }
+.b-gcp { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+.b-az  { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
+.b-tie { background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB; }
+
+/* PIPELINE */
+.pipeline { display: grid; grid-template-columns: repeat(6,1fr); border: 1px solid #E0E0E0; border-radius: 2px; overflow: hidden; margin-bottom: 2rem; }
+.pipe-stage { padding: 1.2rem 0.8rem; border-right: 1px solid #E0E0E0; background: #F9F9F9; transition: background 0.15s; }
+.pipe-stage:last-child { border-right: none; }
+.pipe-stage:hover { background: #FFFFFF; }
+.pipe-num { font-size: 0.65rem; font-weight: 600; color: #AAAAAA; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.pipe-bar { height: 3px; border-radius: 1px; margin-bottom: 0.7rem; }
+.pipe-icon { font-size: 1.2rem; margin-bottom: 0.5rem; }
+.pipe-name { font-size: 0.8rem; font-weight: 700; color: #333333; margin-bottom: 0.3rem; }
+.pipe-desc { font-size: 0.7rem; font-weight: 400; color: #444444; line-height: 1.5; }
+
+/* DECISION CARDS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.dcrd { border: 1px solid #E0E0E0; border-radius: 2px; overflow: hidden; }
+.dcrd-head { padding: 1.2rem 1.4rem; color: #FFFFFF; }
+.dcrd-head .hlbl { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; margin-bottom: 0.4rem; }
+.dcrd-head h3 { font-size: 1.05rem; font-weight: 700; }
+.dcrd-body { padding: 1.2rem 1.4rem; background: #F9F9F9; }
+.dl-label { font-size: 0.65rem; font-weight: 700; color: #333333; letter-spacing: 0.1em; text-transform: uppercase; margin: 0.9rem 0 0.4rem; }
+.dl-label:first-child { margin-top: 0; }
+.dlist { list-style: none; }
+.dlist li { font-size: 0.8rem; font-weight: 400; color: #222222; padding: 0.38rem 0; border-bottom: 1px solid #E0E0E0; display: flex; gap: 0.6rem; line-height: 1.5; }
+.dlist li:last-child { border-bottom: none; }
+
+/* ARCH FLOW */
+.arch-flow { background: #F9F9F9; border: 1px solid #E0E0E0; border-radius: 2px; padding: 1.4rem 1.8rem; margin-bottom: 2rem; }
+.arch-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 5px; }
+.arch-box { padding: 5px 12px; border-radius: 2px; font-size: 0.73rem; font-weight: 400; border: 1px solid; white-space: nowrap; }
+.arch-lbl { font-size: 0.65rem; font-weight: 600; color: #555555; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; margin-top: 12px; }
+.arch-arrow { color: #333333; font-size: 0.73rem; margin: 3px 0 3px 4px; }
+.ab-gcpb { background: #EBF3FC; border-color: #4A90C4; color: #1d4ed8; }
+.ab-gcpg { background: #EDFAF4; border-color: #4CAF7D; color: #1a7340; }
+.ab-gcpy { background: #FEF9E7; border-color: #E8A838; color: #9a6800; }
+.ab-azb  { background: #EBF4FF; border-color: #0078D4; color: #005a9e; }
+.ab-azt  { background: #E0F9FF; border-color: #00B4D8; color: #007a94; }
+.ab-azp  { background: #F5EEFF; border-color: #9B6FC4; color: #5a1f8a; }
+.ab-n    { background: #F3F4F6; border-color: #D1D5DB; color: #555555; }
+
+/* USE CASES */
+.uc-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 1px; background: #E0E0E0; border: 1px solid #E0E0E0; border-radius: 2px; overflow: hidden; margin-bottom: 2rem; }
+.uc-card { background: #FFFFFF; transition: background 0.15s; }
+.uc-card:hover { background: #FAFAFA; }
+.uc-head { padding: 0.9rem 1.1rem; background: #F9F9F9; border-bottom: 1px solid #E0E0E0; }
+.uc-ind { font-size: 0.65rem; font-weight: 600; color: #888888; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.uc-head h3 { font-size: 0.85rem; font-weight: 700; color: #333333; }
+.uc-body { padding: 0.9rem 1.1rem; }
+.ucl { list-style: none; }
+.ucl li { font-size: 0.76rem; font-weight: 400; color: #222222; padding: 0.3rem 0; border-bottom: 1px solid #F0F0F0; display: flex; gap: 0.5rem; line-height: 1.5; }
+.ucl li:last-child { border-bottom: none; }
+.ucl li::before { content: '→'; color: #AAAAAA; flex-shrink: 0; font-size: 0.68rem; margin-top: 2px; }
+.uc-foot { padding: 0.55rem 1.1rem; border-top: 1px solid #E0E0E0; display: flex; flex-wrap: wrap; gap: 5px; }
+.uc-tag { font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 2px; }
+
+/* ROADMAP */
+.roadmap { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid #E0E0E0; border-radius: 2px; overflow: hidden; margin-bottom: 2rem; }
+.rm-ph { padding: 1.3rem 1.1rem; border-right: 1px solid #E0E0E0; background: #F9F9F9; }
+.rm-ph:nth-child(even) { background: #FFFFFF; }
+.rm-ph:last-child { border-right: none; }
+.rm-lbl { font-size: 0.65rem; font-weight: 600; color: #888888; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+.rm-ph h3 { font-size: 0.95rem; font-weight: 700; color: #333333; margin-bottom: 0.9rem; padding-bottom: 0.6rem; border-bottom: 2px solid #333333; }
+.rml { list-style: none; }
+.rml li { font-size: 0.76rem; font-weight: 400; color: #222222; padding: 0.36rem 0; border-bottom: 1px solid #EBEBEB; display: flex; gap: 0.5rem; line-height: 1.5; }
+.rml li::before { content: '○'; color: #AAAAAA; flex-shrink: 0; font-size: 0.58rem; margin-top: 4px; }
+
+/* THREE COL */
+.three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-bottom: 2rem; }
+.info-card { background: #F9F9F9; border: 1px solid #E0E0E0; border-radius: 2px; padding: 1.3rem; }
+.info-card h3 { font-size: 0.95rem; font-weight: 700; color: #333333; margin: 0.5rem 0 0.7rem; line-height: 1.3; }
+.info-card p { font-size: 0.8rem; font-weight: 300; color: #555555; line-height: 1.75; }
+
+/* METRICS */
+.metrics-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: #E0E0E0; border: 1px solid #E0E0E0; border-radius: 2px; overflow: hidden; margin-bottom: 2rem; }
+.metric-cell { background: #FFFFFF; padding: 1.1rem 0.8rem; text-align: center; }
+.metric-lbl { font-size: 0.65rem; font-weight: 600; color: #888888; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+.metric-val { font-size: 1.5rem; font-weight: 700; color: #E8A838; line-height: 1; margin-bottom: 0.3rem; }
+.metric-desc { font-size: 0.7rem; font-weight: 300; color: #888888; line-height: 1.4; }
+
+/* VERDICT */
+.verdict-box { background: #2D2D3F; color: #FFFFFF; border-radius: 2px; padding: 2rem 2.5rem; margin-bottom: 2rem; }
+.verdict-box .vis-label { color: rgba(255,255,255,0.45); }
+.verdict-quote { font-size: 1rem; font-style: italic; font-weight: 400; color: #FFFFFF; line-height: 1.7; margin-bottom: 0.7rem; }
+.verdict-body { font-size: 0.88rem; font-weight: 300; color: rgba(255,255,255,0.75); line-height: 1.8; }
+
+/* DECISION MATRIX SIMPLE */
+.dm-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 2rem; }
+.dm-table th { font-size: 0.65rem; font-weight: 700; color: #333333; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 0.8rem; border-bottom: 2px solid #E0E0E0; background: #F0F0F0; text-align: left; }
+.dm-table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid #E0E0E0; color: #222222; font-weight: 400; }
+.dm-table tr:hover td { background: #FAFAFA; }
+.good { color: #1a7340; font-weight: 600; }
+.mid  { color: #888; }
+
+/* FOOTER */
+footer { background: #2D2D3F; padding: 1.8rem 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-brand { font-size: 0.82rem; font-weight: 700; color: #FFFFFF; }
+.footer-text { font-size: 0.75rem; font-weight: 400; color: rgba(255,255,255,0.75); }
+
+/* MOBILE */
+@media(max-width:768px){
+  .tab-panel.active { flex-direction: column; }
+  .left-panel { width: 100%; position: static; padding: 2rem 1.2rem 1.5rem; }
+  .canvas-area { padding: 1.5rem 1.2rem; }
+  .two-col,.three-col { grid-template-columns: 1fr; }
+  .pipeline { grid-template-columns: repeat(3,1fr); }
+  .roadmap { grid-template-columns: repeat(2,1fr); }
+  .metrics-row { grid-template-columns: repeat(3,1fr); }
+  .tab-btn { height: 56px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">IDP Enterprise Guide</div>
+  <span class="nav-attr">Enterprise Series · Created by Rashmi Singh</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Enterprise Technology Decision Series</div>
+  <h1 class="hero-title">Intelligent Document Processing —<br><em>The Complete Guide</em></h1>
+  <p class="hero-sub">Full technical reference for enterprise architects and technology leaders.</p>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn t1 active" onclick="switchTab('t1')">
+    <span class="tab-num" style="color:#4A90C4;">01</span>
+    <span class="tab-label">What is IDP</span>
+  </button>
+  <button class="tab-btn t2" onclick="switchTab('t2')">
+    <span class="tab-num" style="color:#E8A838;">02</span>
+    <span class="tab-label">Build vs Buy</span>
+  </button>
+  <button class="tab-btn t3" onclick="switchTab('t3')">
+    <span class="tab-num" style="color:#4CAF7D;">03</span>
+    <span class="tab-label">GCP vs Azure</span>
+  </button>
+  <button class="tab-btn t4" onclick="switchTab('t4')">
+    <span class="tab-num" style="color:#9B6FC4;">04</span>
+    <span class="tab-label">Use Cases</span>
+  </button>
+</div>
+
+<!-- ═══ TAB 1: WHAT IS IDP ═══ -->
+<div class="tab-panel t1 active" id="panel-t1">
+  <div class="left-panel">
+    <div class="panel-eyebrow">Chapter 01</div>
+    <h2 class="panel-title">What is Intelligent Document Processing?</h2>
+    <p class="panel-body">IDP is the AI-powered automation of extracting, classifying, validating and routing information from documents — structured, semi-structured, or unstructured — at enterprise scale.</p>
+    <p class="panel-body">Traditional OCR converts pixels to text. IDP goes further — it <em>understands</em> what that text means, what document type it is, whether the data is valid, and where it should go next.</p>
+    <div class="panel-divider"></div>
+    <p class="panel-body" style="font-size:0.82rem;">Every enterprise IDP system — whether built on GCP, Azure, or a SaaS product — follows the same fundamental six-stage lifecycle shown on the right.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Target production metrics</div>
+    <div class="panel-stat">
+      <span style="font-weight:700;color:#4A90C4;">85%+</span> straight-through rate<br>
+      <span style="font-weight:700;color:#4A90C4;">97%+</span> field extraction accuracy<br>
+      <span style="font-weight:700;color:#4A90C4;">&lt;30s</span> end-to-end latency<br>
+      <span style="font-weight:700;color:#4A90C4;">60–80%</span> cost reduction vs manual
+    </div>
+  </div>
+  <div class="right-panel">
+    <div class="canvas-area">
+
+      <div class="canvas-section">
+        <div class="vis-label">The Six-Stage IDP Pipeline</div>
+        <div class="pipeline">
+          <div class="pipe-stage"><div class="pipe-num">01</div><div class="pipe-bar" style="background:#4A90C4;"></div><div class="pipe-icon">📥</div><div class="pipe-name">Ingest</div><div class="pipe-desc">Any format from any source — email, API, scanner, cloud storage, ERP</div></div>
+          <div class="pipe-stage"><div class="pipe-num">02</div><div class="pipe-bar" style="background:#5BA3D0;"></div><div class="pipe-icon">🏷️</div><div class="pipe-name">Classify</div><div class="pipe-desc">AI identifies document type without rigid templates or manual rules</div></div>
+          <div class="pipe-stage"><div class="pipe-num">03</div><div class="pipe-bar" style="background:#E8A838;"></div><div class="pipe-icon">🔍</div><div class="pipe-name">Extract</div><div class="pipe-desc">Pull structured data by understanding context and semantics</div></div>
+          <div class="pipe-stage"><div class="pipe-num">04</div><div class="pipe-bar" style="background:#4CAF7D;"></div><div class="pipe-icon">✅</div><div class="pipe-name">Validate</div><div class="pipe-desc">Cross-check against business rules, databases, and fraud signals</div></div>
+          <div class="pipe-stage"><div class="pipe-num">05</div><div class="pipe-bar" style="background:#9B6FC4;"></div><div class="pipe-icon">🔀</div><div class="pipe-name">Route</div><div class="pipe-desc">Auto-send to ERP, CRM, or approver based on confidence and rules</div></div>
+          <div class="pipe-stage"><div class="pipe-num">06</div><div class="pipe-bar" style="background:#E05050;"></div><div class="pipe-icon">🧠</div><div class="pipe-name">Learn</div><div class="pipe-desc">Human corrections feed back into the model — improves over time</div></div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">IDP vs Traditional OCR</div>
+        <table class="data-table">
+          <thead><tr><th>Capability</th><th>Traditional OCR</th><th>IDP</th></tr></thead>
+          <tbody>
+            <tr><td class="td-s">Text Recognition</td><td>Converts pixels to characters</td><td>Converts pixels to structured, contextual data</td></tr>
+            <tr><td class="td-s">Document Type Handling</td><td>Fixed templates required</td><td>Auto-classifies any document type via AI</td></tr>
+            <tr><td class="td-s">Semantic Understanding</td><td>None — character recognition only</td><td>Understands meaning: "Total Due" = "Amount Payable"</td></tr>
+            <tr><td class="td-s">Validation</td><td>Not included</td><td>Cross-references databases, detects fraud, flags anomalies</td></tr>
+            <tr><td class="td-s">Self-Improvement</td><td>No — static rules</td><td>Active learning loop from human corrections</td></tr>
+            <tr><td class="td-s">Novel Document Types</td><td>Requires full re-templating</td><td>Trains on a few hundred examples, generalises well</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Confidence-Based Routing — Core Control Mechanism</div>
+        <div class="arch-flow">
+          <div class="arch-lbl">Every extracted field receives a confidence score — routing is automatic</div>
+          <div class="arch-row"><div class="arch-box ab-gcpg">✓ &gt;95% confidence → Auto-approve · no human touch required</div></div>
+          <div class="arch-row"><div class="arch-box" style="background:#FEF9E7;border-color:#E8A838;color:#9a6800;">⚑ 70–95% confidence → Flag for review · suggest value to reviewer</div></div>
+          <div class="arch-row"><div class="arch-box" style="background:#FEF0EE;border-color:#E05050;color:#b91c1c;">✗ &lt;70% confidence → Mandatory human review queue</div></div>
+          <div class="arch-lbl" style="margin-top:1rem;">Tuning these thresholds per document type is the most important production configuration decision</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: BUILD VS BUY ═══ -->
+<div class="tab-panel t2" id="panel-t2">
+  <div class="left-panel">
+    <div class="panel-eyebrow">Chapter 02</div>
+    <h2 class="panel-title">Build vs Buy — The First Decision</h2>
+    <p class="panel-body">Before choosing a cloud platform, every enterprise must answer one foundational question: should we build IDP on cloud, or buy a SaaS IDP product?</p>
+    <p class="panel-body">This is a strategic decision with long-term cost, control, and capability implications. There is no universally correct answer.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Popular SaaS IDP products</div>
+    <div class="panel-stat">
+      Hyperscience<br>
+      ABBYY FlexiCapture<br>
+      Dociphi (Quantiphi / GCP)<br>
+      UiPath Document Understanding<br>
+      Kofax TotalAgility<br>
+      IBM Datacap
+    </div>
+    <div class="panel-divider"></div>
+    <div class="vis-label">The rest of this guide</div>
+    <p class="panel-body" style="font-size:0.82rem;">Chapters 03 and 04 assume you have chosen to <strong>Build</strong> on cloud and cover GCP and Azure in full technical depth.</p>
+  </div>
+  <div class="right-panel">
+    <div class="canvas-area">
+
+      <div class="canvas-section">
+        <div class="vis-label">Option Comparison</div>
+        <div class="two-col">
+          <div class="dcrd">
+            <div class="dcrd-head" style="background:#1a6b3c;"><div class="hlbl">Option A</div><h3>Build on Cloud</h3></div>
+            <div class="dcrd-body">
+              <div class="dl-label">When to choose this</div>
+              <ul class="dlist">
+                <li><span>✓</span>Proprietary or sensitive document types</li>
+                <li><span>✓</span>Deep integration with internal systems</li>
+                <li><span>✓</span>Strong ML engineering capacity in-house</li>
+                <li><span>✓</span>Processing 1M+ documents per month</li>
+                <li><span>✓</span>Data sovereignty requirements</li>
+              </ul>
+              <div class="dl-label">Advantages</div>
+              <ul class="dlist">
+                <li><span>✓</span>Full control over models, data and pipeline</li>
+                <li><span>✓</span>Train on your proprietary document corpus</li>
+                <li><span>✓</span>No vendor lock-in on business logic</li>
+                <li><span>✓</span>Significant cost advantage at high volume</li>
+              </ul>
+              <div class="dl-label">Watch out for</div>
+              <ul class="dlist">
+                <li><span>⚑</span>6–12 month build before production-ready</li>
+                <li><span>⚑</span>Requires ML expertise to maintain models</li>
+              </ul>
+            </div>
+          </div>
+          <div class="dcrd">
+            <div class="dcrd-head" style="background:#7f1d1d;"><div class="hlbl">Option B</div><h3>Buy SaaS IDP</h3></div>
+            <div class="dcrd-body">
+              <div class="dl-label">When to choose this</div>
+              <ul class="dlist">
+                <li><span>✓</span>Need to go live within weeks, not months</li>
+                <li><span>✓</span>Standard document types (invoices, receipts)</li>
+                <li><span>✓</span>Limited internal engineering capacity</li>
+                <li><span>✓</span>Mid-range volumes under 500K docs/month</li>
+                <li><span>✓</span>Prefer OpEx over CapEx model</li>
+              </ul>
+              <div class="dl-label">Advantages</div>
+              <ul class="dlist">
+                <li><span>✓</span>Live in 2–6 weeks</li>
+                <li><span>✓</span>Vendor handles model updates and accuracy</li>
+                <li><span>✓</span>No infrastructure to manage</li>
+              </ul>
+              <div class="dl-label">Watch out for</div>
+              <ul class="dlist">
+                <li><span>⚑</span>Vendor lock-in on document models and workflows</li>
+                <li><span>⚑</span>Higher per-document cost at scale</li>
+                <li><span>⚑</span>Data residency concerns with SaaS</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Decision Matrix</div>
+        <table class="dm-table">
+          <thead><tr><th>Factor</th><th>Build on Cloud</th><th>Buy SaaS</th></tr></thead>
+          <tbody>
+            <tr><td class="td-s">Time to first value</td><td>3–6 months</td><td class="good">2–6 weeks</td></tr>
+            <tr><td class="td-s">Cost at 1M docs/month</td><td class="good">$0.05–0.15/doc</td><td>$0.20–0.80/doc</td></tr>
+            <tr><td class="td-s">Customisation depth</td><td class="good">Unlimited</td><td>Limited</td></tr>
+            <tr><td class="td-s">Data sovereignty</td><td class="good">Full control</td><td>Vendor dependent</td></tr>
+            <tr><td class="td-s">Engineering required</td><td>High — ML + DevOps</td><td class="good">Low — configuration</td></tr>
+            <tr><td class="td-s">Accuracy on novel docs</td><td class="good">High — custom trained</td><td class="mid">Medium — generic models</td></tr>
+            <tr><td class="td-s">Vendor lock-in risk</td><td class="good">Low</td><td>High</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="verdict-box">
+        <div class="vis-label">Architect's Verdict</div>
+        <p class="verdict-quote">"For most large enterprises — especially in regulated industries or with complex document types — building on GCP or Azure gives far greater long-term value."</p>
+        <p class="verdict-body">Start with a SaaS product only if speed-to-market is paramount and you can accept vendor lock-in. The rest of this guide focuses entirely on the Build path.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: GCP VS AZURE ═══ -->
+<div class="tab-panel t3" id="panel-t3">
+  <div class="left-panel">
+    <div class="panel-eyebrow">Chapter 03</div>
+    <h2 class="panel-title">GCP vs Azure — Full Technical Stacks</h2>
+    <p class="panel-body">Both GCP and Azure offer world-class IDP capabilities. The right choice depends on your existing cloud estate, team skills, and ecosystem needs.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">GCP strength</div>
+    <p class="panel-body" style="font-size:0.82rem;">Document AI is purpose-built for document understanding. BigQuery is best-in-class for analytics. Gemini is natively multimodal — reads document images and text simultaneously.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Azure strength</div>
+    <p class="panel-body" style="font-size:0.82rem;">Unmatched Microsoft ecosystem — SharePoint, Teams, Dynamics 365, Power Automate. Microsoft Purview for compliance. Best-in-class hybrid vector search via Azure AI Search.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Scorecard summary</div>
+    <div class="panel-stat">
+      <span style="color:#4CAF7D;font-weight:700;">GCP wins:</span> Document AI, BigQuery<br>
+      <span style="color:#4A80CC;font-weight:700;">Azure wins:</span> MS ecosystem, AI Search, Purview<br>
+      <span style="color:#888;font-weight:700;">Tie:</span> Compute, pricing, DevEx
+    </div>
+  </div>
+  <div class="right-panel">
+    <div class="canvas-area">
+
+      <div class="canvas-section">
+        <div class="vis-label">GCP — Core Service Stack for IDP</div>
+        <table class="data-table">
+          <thead><tr><th>Service</th><th>Role in IDP Pipeline</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-s">Document AI</span><span class="td-sub">Core extraction engine</span></td><td>OCR, layout parsing, entity extraction. Pre-built parsers for invoices, contracts, IDs, medical records.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Vertex AI</span><span class="td-sub">ML platform</span></td><td>Custom classification models, MLOps lifecycle, AutoML, model registry, A/B testing in production.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Gemini</span><span class="td-sub">Multimodal LLM</span></td><td>Semantic understanding, clause analysis, doc Q&A. Reads document images + text natively.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Cloud Storage (GCS)</span><span class="td-sub">Document lake</span></td><td>Landing zone, intermediate storage, archive. Lifecycle rules for tiered storage. Event notifications trigger Pub/Sub.</td><td><span class="badge b-infra">Infra</span></td></tr>
+            <tr><td><span class="td-s">Pub/Sub + Eventarc</span><span class="td-sub">Event bus</span></td><td>Async message queue decoupling ingestion from processing. Dead-letter queue and retry logic built-in.</td><td><span class="badge b-infra">Infra</span></td></tr>
+            <tr><td><span class="td-s">Cloud Workflows</span><span class="td-sub">Orchestrator</span></td><td>DAG-based pipeline with conditional branching — confidence &lt;80% routes to human review automatically.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Cloud Run</span><span class="td-sub">Serverless compute</span></td><td>One container per pipeline stage. Scales to zero when idle. No infrastructure management needed.</td><td><span class="badge b-infra">Infra</span></td></tr>
+            <tr><td><span class="td-s">BigQuery</span><span class="td-sub">Analytics + vector search</span></td><td>All extracted data stored here. Native vector embeddings for RAG over your entire document corpus.</td><td><span class="badge b-infra">Data</span></td></tr>
+            <tr><td><span class="td-s">Cloud DLP</span><span class="td-sub">PII protection</span></td><td>Auto-detect and redact PII before storage or sharing. 150+ built-in detectors across 50+ countries.</td><td><span class="badge b-sec">Security</span></td></tr>
+            <tr><td><span class="td-s">Apigee</span><span class="td-sub">API gateway</span></td><td>Expose IDP as managed API. OAuth2, rate limiting, versioning, developer portal, multi-tenancy.</td><td><span class="badge b-ops">Ops</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">GCP — Reference Architecture Flow</div>
+        <div class="arch-flow">
+          <div class="arch-lbl">Ingestion Sources</div>
+          <div class="arch-row">
+            <div class="arch-box ab-n">📧 Email / Gmail</div>
+            <div class="arch-box ab-n">☁️ GCS Drop Zone</div>
+            <div class="arch-box ab-n">🌐 REST API</div>
+            <div class="arch-box ab-n">📠 Scanner / MFP</div>
+            <div class="arch-box ab-n">🔗 SFTP / ERP</div>
+          </div>
+          <div class="arch-arrow">↓ GCS bucket → Pub/Sub event triggered ↓</div>
+          <div class="arch-lbl">Pre-Processing (Cloud Run)</div>
+          <div class="arch-row">
+            <div class="arch-box ab-gcpy">Format Converter</div>
+            <div class="arch-box ab-gcpy">Image Enhancer</div>
+            <div class="arch-box ab-gcpy">Quality Scorer</div>
+            <div class="arch-box ab-gcpy">Doc Splitter</div>
+          </div>
+          <div class="arch-arrow">↓ Cloud Workflows orchestrates parallel AI processing ↓</div>
+          <div class="arch-lbl">AI Processing Layer</div>
+          <div class="arch-row">
+            <div class="arch-box ab-gcpb">Document AI — OCR + Layout</div>
+            <div class="arch-box ab-gcpb">Vertex AI — Classification</div>
+            <div class="arch-box ab-gcpb">Document AI — Entity Extraction</div>
+            <div class="arch-box ab-gcpb">Gemini — Semantic Understanding</div>
+          </div>
+          <div class="arch-arrow">↓ Confidence gating → &gt;95% auto-approve · 70–95% flag · &lt;70% human review ↓</div>
+          <div class="arch-lbl">Validation + Security</div>
+          <div class="arch-row">
+            <div class="arch-box ab-gcpg">Business Rules Engine</div>
+            <div class="arch-box ab-gcpg">Cloud DLP — PII Redaction</div>
+            <div class="arch-box ab-gcpg">DB Cross-Reference (AlloyDB)</div>
+            <div class="arch-box ab-n">👤 Human Review UI</div>
+          </div>
+          <div class="arch-arrow">↓ Pub/Sub → downstream output routing ↓</div>
+          <div class="arch-lbl">Output & Integration</div>
+          <div class="arch-row">
+            <div class="arch-box ab-gcpb">BigQuery Analytics</div>
+            <div class="arch-box ab-gcpb">ERP / SAP / Oracle</div>
+            <div class="arch-box ab-gcpb">CRM / Salesforce</div>
+            <div class="arch-box ab-gcpb">DMS / SharePoint</div>
+            <div class="arch-box ab-gcpb">Webhooks / Apigee</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Azure — Core Service Stack for IDP</div>
+        <table class="data-table">
+          <thead><tr><th>Service</th><th>Role in IDP Pipeline</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr><td><span class="td-s">Azure AI Document Intelligence</span><span class="td-sub">Formerly Form Recognizer</span></td><td>OCR, layout analysis, prebuilt models. No-code custom model training via Document Intelligence Studio.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Azure OpenAI (GPT-4o)</span><span class="td-sub">Multimodal LLM</span></td><td>Semantic understanding, clause analysis, doc Q&A. GPT-4o processes images and text natively.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Azure Machine Learning</span><span class="td-sub">ML platform</span></td><td>Custom classification training, MLOps lifecycle, AutoML, model registry, batch inference at scale.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Azure Blob Storage + Event Grid</span><span class="td-sub">Document lake + triggers</span></td><td>Landing zone and tiered storage. Event Grid triggers pipeline on blob creation — same role as GCS + Pub/Sub.</td><td><span class="badge b-infra">Infra</span></td></tr>
+            <tr><td><span class="td-s">Logic Apps + Durable Functions</span><span class="td-sub">Orchestration</span></td><td>Logic Apps for low-code workflows with 400+ connectors. Durable Functions for stateful serverless pipelines.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Azure Container Apps</span><span class="td-sub">Serverless compute</span></td><td>KEDA-based autoscaling on queue depth — particularly powerful for IDP burst workloads.</td><td><span class="badge b-infra">Infra</span></td></tr>
+            <tr><td><span class="td-s">Azure AI Search</span><span class="td-sub">Hybrid semantic search</span></td><td>Best-in-class hybrid keyword + vector search. Purpose-built for RAG patterns over document archives.</td><td><span class="badge b-core">Core</span></td></tr>
+            <tr><td><span class="td-s">Microsoft Purview</span><span class="td-sub">Governance + DLP</span></td><td>Enterprise data governance, PII classification, sensitivity labels, GDPR/HIPAA. Data lineage tracking.</td><td><span class="badge b-sec">Security</span></td></tr>
+            <tr><td><span class="td-s">Power Automate</span><span class="td-sub">Business workflow</span></td><td>Connect IDP output to Teams approvals, SharePoint, Dynamics 365 — low-code for business users.</td><td><span class="badge b-infra">Integration</span></td></tr>
+            <tr><td><span class="td-s">Azure Synapse + Power BI</span><span class="td-sub">Analytics</span></td><td>Analytics warehouse for extracted data. Power BI natively embedded in Teams for real-time dashboards.</td><td><span class="badge b-infra">Data</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Azure — Reference Architecture Flow</div>
+        <div class="arch-flow">
+          <div class="arch-lbl">Ingestion Sources</div>
+          <div class="arch-row">
+            <div class="arch-box ab-n">📧 Outlook / Exchange</div>
+            <div class="arch-box ab-n">📁 SharePoint / OneDrive</div>
+            <div class="arch-box ab-n">🌐 REST API</div>
+            <div class="arch-box ab-n">📠 Scanner / MFP</div>
+            <div class="arch-box ab-n">🔗 SFTP / ERP</div>
+          </div>
+          <div class="arch-arrow">↓ Azure Blob Storage → Event Grid → Service Bus ↓</div>
+          <div class="arch-lbl">Pre-Processing (Container Apps)</div>
+          <div class="arch-row">
+            <div class="arch-box ab-azt">Format Converter</div>
+            <div class="arch-box ab-azt">Image Enhancer</div>
+            <div class="arch-box ab-azt">Quality Scorer (AI Vision)</div>
+            <div class="arch-box ab-azt">Doc Splitter</div>
+          </div>
+          <div class="arch-arrow">↓ Logic Apps / Durable Functions orchestrate parallel AI processing ↓</div>
+          <div class="arch-lbl">AI Processing Layer</div>
+          <div class="arch-row">
+            <div class="arch-box ab-azb">Document Intelligence — OCR</div>
+            <div class="arch-box ab-azb">Azure ML — Classification</div>
+            <div class="arch-box ab-azb">Document Intelligence — Extraction</div>
+            <div class="arch-box ab-azb">Azure OpenAI GPT-4o — Semantic</div>
+          </div>
+          <div class="arch-arrow">↓ Confidence gating → auto-approve · flag · human review ↓</div>
+          <div class="arch-lbl">Validation + Security</div>
+          <div class="arch-row">
+            <div class="arch-box ab-azp">Business Rules Engine</div>
+            <div class="arch-box ab-azp">Microsoft Purview — PII</div>
+            <div class="arch-box ab-azp">DB Cross-Reference (Azure SQL)</div>
+            <div class="arch-box ab-n">👤 Teams Adaptive Cards</div>
+          </div>
+          <div class="arch-arrow">↓ Service Bus → output routing ↓</div>
+          <div class="arch-lbl">Output & Integration</div>
+          <div class="arch-row">
+            <div class="arch-box ab-azb">Synapse Analytics</div>
+            <div class="arch-box ab-azb">Dynamics 365 / SAP</div>
+            <div class="arch-box ab-azb">SharePoint / Teams</div>
+            <div class="arch-box ab-azb">Power Automate Flows</div>
+            <div class="arch-box ab-azb">APIM / Webhooks</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Head-to-Head — 12 Capability Areas</div>
+        <table class="data-table">
+          <thead><tr><th>Capability Area</th><th>GCP</th><th>Azure</th><th>Winner</th></tr></thead>
+          <tbody>
+            <tr><td class="td-s">Core Document AI Engine</td><td>Document AI — purpose-built specialised parsers per doc type</td><td>Azure AI Document Intelligence — excellent, great Studio UI</td><td><span class="badge b-gcp">GCP edge</span></td></tr>
+            <tr><td class="td-s">LLM / Generative AI</td><td>Gemini — natively multimodal, reads document images directly</td><td>GPT-4o — massive ecosystem, fine-tuning available</td><td><span class="badge b-az">Azure edge</span></td></tr>
+            <tr><td class="td-s">Pipeline Orchestration</td><td>Cloud Workflows — clean, serverless, YAML-based</td><td>Logic Apps + Durable Functions — 400+ connectors, business-friendly</td><td><span class="badge b-az">Azure edge</span></td></tr>
+            <tr><td class="td-s">Microsoft Ecosystem</td><td>Limited — custom connectors needed for SharePoint, Teams</td><td>Native — SharePoint, Teams, Outlook, Dynamics 365 first-class</td><td><span class="badge b-az">Azure wins</span></td></tr>
+            <tr><td class="td-s">Analytics & Data Warehouse</td><td>BigQuery — best-in-class serverless, native vector search</td><td>Synapse — solid but heavier; tighter Power BI integration</td><td><span class="badge b-gcp">GCP wins</span></td></tr>
+            <tr><td class="td-s">Serverless Compute</td><td>Cloud Run — mature, fast cold starts, simple pricing</td><td>Container Apps — KEDA scaling on queue depth is powerful</td><td><span class="badge b-tie">Tie</span></td></tr>
+            <tr><td class="td-s">Security & Compliance</td><td>Cloud DLP 150+ detectors, VPC Service Controls, CMEK</td><td>Microsoft Purview — unified governance across Microsoft estate</td><td><span class="badge b-az">Azure edge</span></td></tr>
+            <tr><td class="td-s">Semantic / Vector Search</td><td>BigQuery vector search + Vertex AI matching engine</td><td>Azure AI Search — best-in-class hybrid keyword + vector search</td><td><span class="badge b-az">Azure edge</span></td></tr>
+            <tr><td class="td-s">Human Review Tooling</td><td>Document AI Human Review — functional but basic</td><td>Teams Adaptive Cards — rich approvals without custom UI</td><td><span class="badge b-az">Azure edge</span></td></tr>
+            <tr><td class="td-s">Pricing at Scale</td><td>~$1.50/1000 pages. Sustained use discounts auto-apply.</td><td>~$1.50/1000 pages. Commitment discounts via EA.</td><td><span class="badge b-tie">Tie</span></td></tr>
+            <tr><td class="td-s">Regulated Industries</td><td>Strong — GCP Healthcare API, HIPAA-compliant</td><td>Excellent — broadest compliance certification portfolio</td><td><span class="badge b-az">Azure edge</span></td></tr>
+            <tr><td class="td-s">Developer Experience</td><td>Strong Python/gRPC SDKs, Cloud Run DevEx excellent</td><td>Excellent .NET + Python SDKs, VS Code + GitHub Copilot natural</td><td><span class="badge b-tie">Tie</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 4: ROADMAP & USE CASES ═══ -->
+<div class="tab-panel t4" id="panel-t4">
+  <div class="left-panel">
+    <div class="panel-eyebrow">Chapter 04</div>
+    <h2 class="panel-title">Use Cases, Roadmap & Recommendation</h2>
+    <p class="panel-body">Eight industries. A four-phase build roadmap. And the architect's final recommendation on which cloud to choose and how to start.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Choose GCP when</div>
+    <p class="panel-body" style="font-size:0.82rem;">Your workload is document-intensive and data-first. You want the strongest document AI with clean scalable architecture. Your estate is already GCP or Google Workspace.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Choose Azure when</div>
+    <p class="panel-body" style="font-size:0.82rem;">SharePoint, Teams, Dynamics 365, or Office 365 are central to operations. You're in banking, insurance, or healthcare. You have a Microsoft EA agreement.</p>
+    <div class="panel-divider"></div>
+    <div class="vis-label">Universal rule</div>
+    <p class="panel-body" style="font-size:0.82rem;font-style:italic;color:#9B6FC4;font-weight:400;">"Pick one document type. Build it in 4 weeks. Prove value. Then expand."</p>
+  </div>
+  <div class="right-panel">
+    <div class="canvas-area">
+
+      <div class="canvas-section">
+        <div class="vis-label">Enterprise Use Cases — 8 Industries</div>
+        <div class="uc-grid">
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Finance & Accounting</div><h3>Accounts Payable Automation</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Extract invoice header, line items, tax, totals</li><li>3-way PO / GR / Invoice matching</li><li>Duplicate invoice and fraud detection</li><li>Route to approver by amount and vendor rule</li><li>Push to ERP for payment scheduling</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Invoice Parser</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: Doc Intelligence</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Banking & Insurance</div><h3>Loan & Claims Processing</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Extract borrower data from applications</li><li>Verify income docs and bank statements</li><li>Classify claim type, extract damage amounts</li><li>Cross-reference policy documents</li><li>Generate underwriting summary via LLM</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Gemini + Vertex AI</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: GPT-4o + Purview</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Healthcare</div><h3>Medical Records & Prior Auth</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Extract patient demographics, diagnoses, medications</li><li>Parse lab reports and clinical notes (NLP)</li><li>Process prior authorisation forms</li><li>HIPAA-compliant PII redaction throughout</li><li>Integrate with Epic, Cerner EHR systems</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Healthcare API + DLP</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: Purview + FHIR</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Legal & Compliance</div><h3>Contract Intelligence</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Extract parties, dates, obligations, SLAs</li><li>Identify risk clauses, flag deviations</li><li>Compare against contract templates</li><li>Build searchable contract repository</li><li>Q&amp;A over contracts using LLM + RAG</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Gemini + BigQuery</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: OpenAI + AI Search</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">HR & Onboarding</div><h3>Employee Document Processing</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Verify IDs, visas, work permits automatically</li><li>Extract degree and certification data</li><li>Process offer letters and NDAs</li><li>Onboarding compliance checklist automation</li><li>Payroll document verification</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Doc AI ID Parser</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: ID Verification API</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Supply Chain & Logistics</div><h3>Trade & Customs Documents</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Process bills of lading and packing lists</li><li>Extract HS codes, quantities, country of origin</li><li>Validate against customs regulations</li><li>Automate import/export compliance checks</li><li>Integrate with TMS and ERP systems</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Custom Processor</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: Custom Neural Model</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Government & Public Sector</div><h3>Permit & Licence Processing</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Classify and route citizen applications</li><li>Extract supporting document data automatically</li><li>Validate against eligibility rules</li><li>Full audit trail for every decision</li><li>Multi-language document handling</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Translation + Doc AI</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: Translator + Doc Intel</span></div>
+          </div>
+          <div class="uc-card">
+            <div class="uc-head"><div class="uc-ind">Real Estate</div><h3>Property Transaction Automation</h3></div>
+            <div class="uc-body"><ul class="ucl"><li>Extract lease terms, rent, duration, key clauses</li><li>Process title documents and property deeds</li><li>Mortgage application document validation</li><li>Appraisal report data extraction</li><li>State disclosure requirement compliance</li></ul></div>
+            <div class="uc-foot"><span class="uc-tag" style="background:#EBF3FC;color:#1d4ed8;border:1px solid #4A90C4;">GCP: Gemini + Workflows</span><span class="uc-tag" style="background:#EBF4FF;color:#005a9e;border:1px solid #0078D4;">Azure: OpenAI + Logic Apps</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Phased Build Roadmap — Applies to Both GCP and Azure</div>
+        <div class="roadmap">
+          <div class="rm-ph"><div class="rm-lbl">Phase 1 · Weeks 1–4</div><h3>Foundation</h3><ul class="rml"><li>Cloud setup, IAM, VPC, org policies</li><li>Storage structure: landing, staging, archive</li><li>Message queue setup</li><li>First AI processor for one document type</li><li>Simple trigger pipeline</li><li>Basic monitoring and alerting</li></ul></div>
+          <div class="rm-ph"><div class="rm-lbl">Phase 2 · Weeks 5–8</div><h3>Intelligence</h3><ul class="rml"><li>Custom model training on your corpus</li><li>Classification model training</li><li>Full pipeline orchestration DAG</li><li>Validation rules engine</li><li>Analytics warehouse setup</li><li>Operational metadata database</li></ul></div>
+          <div class="rm-ph"><div class="rm-lbl">Phase 3 · Weeks 9–12</div><h3>Enterprise Features</h3><ul class="rml"><li>Human review UI or Teams approval flow</li><li>LLM integration for semantic understanding</li><li>PII detection and redaction pipeline</li><li>API gateway exposure</li><li>ERP, CRM, DMS connectors</li><li>Business-facing dashboards</li></ul></div>
+          <div class="rm-ph"><div class="rm-lbl">Phase 4 · Ongoing</div><h3>Optimise & Scale</h3><ul class="rml"><li>Active learning loop from human corrections</li><li>Model A/B testing in production</li><li>Real-time vs batch cost optimisation</li><li>Multi-region HA/DR deployment</li><li>SLA reporting and SLO enforcement</li><li>Expand to new document types</li></ul></div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Architect's Final Recommendation</div>
+        <div class="three-col">
+          <div class="info-card">
+            <div class="vis-label">Choose GCP when</div>
+            <h3>Workload is document-intensive and data-first</h3>
+            <p>GCP wins on Document AI depth, BigQuery analytics power, and Gemini's native multimodal document understanding. Best for teams wanting the strongest document-specific AI with clean scalable data architecture.</p>
+          </div>
+          <div class="info-card">
+            <div class="vis-label">Choose Azure when</div>
+            <h3>You live in the Microsoft ecosystem</h3>
+            <p>Azure wins decisively when SharePoint, Teams, Dynamics 365, or Office 365 are central to operations. Native connectors eliminate weeks of integration work. Best for enterprises with Microsoft EA agreements.</p>
+          </div>
+          <div class="info-card">
+            <div class="vis-label">The universal truth</div>
+            <h3>Start small. Prove value fast. Scale what works.</h3>
+            <p>The biggest IDP failures happen when enterprises try to automate 20 document types at once. Win on invoices first. Then contracts. Then everything else. Build one pipeline in 4 weeks. Measure it. Then expand.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-section">
+        <div class="vis-label">Target Production Metrics</div>
+        <div class="metrics-row">
+          <div class="metric-cell"><div class="metric-lbl">Straight-Through Rate</div><div class="metric-val">&gt;85%</div><div class="metric-desc">Documents processed without human touch</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Extraction Accuracy</div><div class="metric-val">&gt;97%</div><div class="metric-desc">Field-level on trained document types</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Processing Latency</div><div class="metric-val">&lt;30s</div><div class="metric-desc">End-to-end for standard documents</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Peak Throughput</div><div class="metric-val">10M+</div><div class="metric-desc">Documents per day at full scale</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Cost Reduction</div><div class="metric-val">60–80%</div><div class="metric-desc">Versus manual document processing</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Model Retraining Cycle</div><div class="metric-val">&lt;2wks</div><div class="metric-desc">Time to retrain on new document type</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Exception Rate</div><div class="metric-val">&lt;5%</div><div class="metric-desc">Documents requiring manual intervention</div></div>
+          <div class="metric-cell"><div class="metric-lbl">Fraud Detection Rate</div><div class="metric-val">&gt;92%</div><div class="metric-desc">Duplicate & anomaly detection accuracy</div></div>
+          <div class="metric-cell"><div class="metric-lbl">PII Redaction Accuracy</div><div class="metric-val">99.9%</div><div class="metric-desc">Sensitive fields detected and masked</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-brand">IDP Enterprise Decision Guide</span>
+  <span class="footer-text">GCP: Document AI · Vertex AI · Gemini · BigQuery · Cloud Workflows</span>
+  <span class="footer-text">Azure: Document Intelligence · Azure OpenAI · Synapse · Logic Apps · Purview</span>
+  <span class="footer-text">Created by <span style="color:#E8A838;font-weight:600;">Rashmi Singh</span> · Enterprise Series</span>
+</footer>
+
+<script>
+function switchTab(id) {
+  // deactivate all buttons and panels
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  // activate selected
+  document.querySelectorAll('.tab-btn.' + id).forEach(function(b){ b.classList.add('active'); });
+  var panel = document.getElementById('panel-' + id);
+  if (panel) {
+    panel.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+</script>
+</body>
+</html>

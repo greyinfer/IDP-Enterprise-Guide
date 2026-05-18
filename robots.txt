@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://intelligent-document-processing-idp.netlify.app/sitemap.xml
